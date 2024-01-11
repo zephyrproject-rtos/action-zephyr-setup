@@ -1,0 +1,139 @@
+# Copyright 2024 Google LLC
+# SPDX-License-Identifier: Apache-2.0
+
+name: Setup Zephyr project
+description: Setup a Zephyr base project using west and downloading the Zephyr SDK
+
+inputs:
+  app-path:
+    description: Application code path, should contain a west.yml file
+    required: true
+
+  sdk-version:
+    description: Zephyr SDK version to use
+    required: false
+    default: 0.16.4
+
+  sdk-base:
+    description: Base URL of the Zephyr SDK
+    required: false
+    default: https://github.com/zephyrproject-rtos/sdk-ng/releases/download
+
+  toolchains:
+    description: List of toolchains to install, colon separated
+    required: false
+    default: arm-zephyr-eabi
+
+runs:
+  using: "composite"
+  steps:
+    - name: Environment setup
+      id: env-setup
+      shell: bash
+      run: |
+        runner="${{ runner.os }}-${{ runner.arch }}"
+        if [ "$runner" = "Linux-X64" ]; then
+          sdk_variant="linux-x86_64"
+        elif [ "$runner" = "Linux-ARM64" ]; then
+          sdk_variant="linux-aarch64"
+        elif [ "$runner" = "macOS-X64" ]; then
+          sdk_variant="macos-x86_64"
+        elif [ "$runner" = "macOS-ARM64" ]; then
+          sdk_variant="macos-aarch64"
+        elif [ "$runner" = "Windows-X64" ]; then
+          sdk_variant="windows-x86_64"
+        else
+          echo "Unsupported runner platform: $runner"
+        fi
+
+        if [ "${{ runner.os }}" = "Linux" ]; then
+          pip_cache_path="~/.cache/pip"
+          sdk_ext="tar.xz"
+          setup_file="./setup.sh"
+          setup_opt="-"
+        elif [ "${{ runner.os }}" = "macOS" ]; then
+          pip_cache_path="~/Library/Caches/pip"
+          sdk_ext="tar.xz"
+          setup_file="./setup.sh"
+          setup_opt="-"
+        elif [ "${{ runner.os }}" = "Windows" ]; then
+          pip_cache_path="~\AppData\Local\pip\Cache"
+          sdk_ext="7z"
+          setup_file="./setup.cmd"
+          setup_opt="//"
+        fi
+
+        echo "SDK_FILE=zephyr-sdk-${{ inputs.sdk-version }}_${sdk_variant}_minimal.${sdk_ext}" >> $GITHUB_ENV
+        echo "PIP_CACHE_PATH=${pip_cache_path}" >> $GITHUB_ENV
+        echo "SETUP_FILE=${setup_file}" >> $GITHUB_ENV
+        echo "SETUP_OPT=${setup_opt}" >> $GITHUB_ENV
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip3 install -U pip wheel
+        pip3 install west
+        if [ "${{ runner.os }}" = "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install ninja-build ccache
+          if [ "${{ runner.arch }}" = "X64" ]; then
+            sudo apt-get install libc6-dev-i386
+          fi
+        elif [ "${{ runner.os }}" = "macOS" ]; then
+          brew install ninja ccache
+        elif [ "${{ runner.os }}" = "Windows" ]; then
+          choco feature enable -n allowGlobalConfirmation
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+          choco install ninja wget 7zip
+        fi
+
+    - name: Cache Zephyr SDK
+      id: cache-toolchain
+      uses: actions/cache@v3
+      with:
+        path: zephyr-sdk
+        key: ${{ env.SDK_FILE }}-${{ inputs.toolchains }}
+
+    - if: ${{ steps.cache-toolchain.outputs.cache-hit != 'true' }}
+      name: Download Zephyr SDK
+      shell: bash
+      run: |
+        wget --progress=dot:giga ${{ inputs.sdk-base }}/v${{ inputs.sdk-version }}/$SDK_FILE
+        if [ "${{ runner.os }}" = "Windows" ]; then
+          7z x $SDK_FILE
+          mv zephyr-sdk-${{ inputs.sdk-version }} zephyr-sdk
+        else
+          mkdir zephyr-sdk
+          tar xvf $SDK_FILE -C zephyr-sdk --strip-components=1
+        fi
+
+    - name: Setup Zephyr SDK
+      working-directory: zephyr-sdk
+      shell: bash
+      run: |
+        IFS=":"
+        TOOLCHAINS="${{ inputs.toolchains }}"
+        for toolchain in $TOOLCHAINS; do
+            ${SETUP_FILE} ${SETUP_OPT}t $toolchain
+        done
+        if [ ! -d sysroots ]; then
+            ${SETUP_FILE} ${SETUP_OPT}h
+        fi
+        ${SETUP_FILE} ${SETUP_OPT}c
+
+    - name: Initialize
+      shell: bash
+      run: |
+        west init -l ${{ inputs.app-path }}
+        west update -o=--depth=1 -n
+
+    - name: Cache Python packages
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.PIP_CACHE_PATH }}
+        key: pip-${{ runner.os }}-${{ hashFiles('zephyr/scripts/requirements*.txt') }}
+
+    - name: Install Python packages
+      shell: bash
+      run: |
+        pip3 install -r zephyr/scripts/requirements.txt

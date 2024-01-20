@@ -10,9 +10,9 @@ inputs:
     required: true
 
   sdk-version:
-    description: Zephyr SDK version to use
+    description: Zephyr SDK version to use or "auto" to detect automatically
     required: false
-    default: 0.16.4
+    default: auto
 
   sdk-base:
     description: Base URL of the Zephyr SDK
@@ -88,7 +88,25 @@ runs:
           setup_opt="//"
         fi
 
-        echo "SDK_FILE=zephyr-sdk-${{ inputs.sdk-version }}_${sdk_variant}_minimal.${sdk_ext}" >> $GITHUB_ENV
+        if [ "${{ inputs.sdk-version }}" = "auto" ]; then
+          zephyr_path="zephyr"
+          if west list -f '{abspath}' zephyr; then
+            zephyr_path="$( west list -f '{abspath}' zephyr )"
+          fi
+
+          if [ -f "${zephyr_path}/SDK_VERSION" ]; then
+            echo "Reading SDK version from ${zephyr_path}/SDK_VERSION"
+            sdk_version=$( cat ${zephyr_path}/SDK_VERSION )
+          else
+            echo "Cannot find ${zephyr_path}/SDK_VERSION"
+            exit 1
+          fi
+        else
+          sdk_version="${{ inputs.sdk-version }}"
+        fi
+
+        echo "SDK_VERSION=${sdk_version}" >> $GITHUB_ENV
+        echo "SDK_FILE=zephyr-sdk-${sdk_version}_${sdk_variant}_minimal.${sdk_ext}" >> $GITHUB_ENV
         echo "PIP_CACHE_PATH=${pip_cache_path}" >> $GITHUB_ENV
         echo "SETUP_FILE=${setup_file}" >> $GITHUB_ENV
         echo "SETUP_OPT=${setup_opt}" >> $GITHUB_ENV
@@ -115,10 +133,10 @@ runs:
       name: Download Zephyr SDK
       shell: bash
       run: |
-        wget --progress=dot:giga ${{ inputs.sdk-base }}/v${{ inputs.sdk-version }}/$SDK_FILE
+        wget --progress=dot:giga ${{ inputs.sdk-base }}/v${SDK_VERSION}/${SDK_FILE}
         if [ "${{ runner.os }}" = "Windows" ]; then
           7z x $SDK_FILE
-          mv zephyr-sdk-${{ inputs.sdk-version }} zephyr-sdk
+          mv zephyr-sdk-${SDK_VERSION} zephyr-sdk
         else
           mkdir zephyr-sdk
           tar xvf $SDK_FILE -C zephyr-sdk --strip-components=1

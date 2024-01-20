@@ -27,6 +27,31 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Install dependencies
+      shell: bash
+      run: |
+        pip3 install -U pip wheel
+        pip3 install west
+        if [ "${{ runner.os }}" = "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install ninja-build ccache
+          if [ "${{ runner.arch }}" = "X64" ]; then
+            sudo apt-get install libc6-dev-i386
+          fi
+        elif [ "${{ runner.os }}" = "macOS" ]; then
+          brew install ninja ccache
+        elif [ "${{ runner.os }}" = "Windows" ]; then
+          choco feature enable -n allowGlobalConfirmation
+          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+          choco install ninja wget 7zip
+        fi
+
+    - name: Initialize
+      shell: bash
+      run: |
+        west init -l ${{ inputs.app-path }}
+        west update -o=--depth=1 -n
+
     - name: Environment setup
       id: env-setup
       shell: bash
@@ -68,24 +93,16 @@ runs:
         echo "SETUP_FILE=${setup_file}" >> $GITHUB_ENV
         echo "SETUP_OPT=${setup_opt}" >> $GITHUB_ENV
 
-    - name: Install dependencies
+    - name: Cache Python packages
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.PIP_CACHE_PATH }}
+        key: pip-${{ runner.os }}-${{ hashFiles('zephyr/scripts/requirements*.txt') }}
+
+    - name: Install Python packages
       shell: bash
       run: |
-        pip3 install -U pip wheel
-        pip3 install west
-        if [ "${{ runner.os }}" = "Linux" ]; then
-          sudo apt-get update
-          sudo apt-get install ninja-build ccache
-          if [ "${{ runner.arch }}" = "X64" ]; then
-            sudo apt-get install libc6-dev-i386
-          fi
-        elif [ "${{ runner.os }}" = "macOS" ]; then
-          brew install ninja ccache
-        elif [ "${{ runner.os }}" = "Windows" ]; then
-          choco feature enable -n allowGlobalConfirmation
-          choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-          choco install ninja wget 7zip
-        fi
+        pip3 install -r zephyr/scripts/requirements.txt
 
     - name: Cache Zephyr SDK
       id: cache-toolchain
@@ -120,20 +137,3 @@ runs:
             ${SETUP_FILE} ${SETUP_OPT}h
         fi
         ${SETUP_FILE} ${SETUP_OPT}c
-
-    - name: Initialize
-      shell: bash
-      run: |
-        west init -l ${{ inputs.app-path }}
-        west update -o=--depth=1 -n
-
-    - name: Cache Python packages
-      uses: actions/cache@v3
-      with:
-        path: ${{ env.PIP_CACHE_PATH }}
-        key: pip-${{ runner.os }}-${{ hashFiles('zephyr/scripts/requirements*.txt') }}
-
-    - name: Install Python packages
-      shell: bash
-      run: |
-        pip3 install -r zephyr/scripts/requirements.txt

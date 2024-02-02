@@ -39,7 +39,7 @@ runs:
             sudo apt-get install libc6-dev-i386
           fi
         elif [ "${{ runner.os }}" = "macOS" ]; then
-          brew install ninja ccache
+          brew install ninja ccache qemu dtc
         elif [ "${{ runner.os }}" = "Windows" ]; then
           choco feature enable -n allowGlobalConfirmation
           choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'

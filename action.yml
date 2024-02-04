@@ -30,8 +30,13 @@ runs:
     - name: Install dependencies
       shell: bash
       run: |
+        if [ "${{ runner.os }}" = "Windows" ]; then
+          python.exe -m pip install -U pip
+        fi
+
         pip3 install -U pip wheel
         pip3 install west
+
         if [ "${{ runner.os }}" = "Linux" ]; then
           sudo apt-get update
           sudo apt-get install ninja-build ccache

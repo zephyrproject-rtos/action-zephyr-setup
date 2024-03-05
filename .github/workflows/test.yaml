@@ -1,0 +1,48 @@
+name: Action test
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, macos-12, macos-14, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Main Zephyr repository checkout
+        uses: actions/checkout@v4
+        with:
+          repository: zephyrproject-rtos/zephyr
+          path: zephyr
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Setup Zephyr project
+        uses: ./
+        with:
+          app-path: zephyr
+          toolchains: all
+
+      - name: Build firmware
+        working-directory: zephyr
+        shell: bash
+        run: |
+          if [ "${{ runner.os }}" = "macOS" ]; then
+            EXTRA_TWISTER_FLAGS="-P native_sim --build-only"
+          elif [ "${{ runner.os }}" = "Windows" ]; then
+            EXTRA_TWISTER_FLAGS="-P native_sim --short-build-path -O/tmp/twister-out"
+          fi
+          ./scripts/twister --force-color --inline-logs -T samples/hello_world -v $EXTRA_TWISTER_FLAGS

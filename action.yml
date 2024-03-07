@@ -34,6 +34,8 @@ runs:
           python.exe -m pip install -U pip
         fi
 
+        echo "test, ignore"
+
         pip3 install -U pip wheel
         pip3 install west
 

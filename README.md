@@ -62,4 +62,15 @@ the necessary modules for a West based [Zephyr workspace application][1].
     sdk-version: 0.16.3
 ```
 
+## Specify a custom west workspace manifest file name
+
+```yaml
+- name: Setup Zephyr project
+  uses: zephyrproject-rtos/zephyr-setup@v1
+  with:
+    app-path: app
+    toolchains: arm-zephyr-eabi
+    manifest-file-name: custom_west.yml
+```
+
 [1]: https://docs.zephyrproject.org/latest/develop/application/index.html#zephyr-workspace-app

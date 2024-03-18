@@ -6,8 +6,14 @@ description: Setup a Zephyr base project using west and downloading the Zephyr S
 
 inputs:
   app-path:
-    description: Application code path, should contain a west.yml file
+    description: |
+      Application code path, should contain a west.yml file if "manifest-file-name" is not specified
     required: true
+
+  manifest-file-name:
+    description: Name of the west workspace manifest file name in "app-path"
+    required: false
+    default: west.yml
 
   sdk-version:
     description: Zephyr SDK version to use or "auto" to detect automatically
@@ -54,7 +60,7 @@ runs:
     - name: Initialize
       shell: bash
       run: |
-        west init -l ${{ inputs.app-path }}
+        west init -l ${{ inputs.app-path }} --mf ${{ inputs.manifest-file-name }}
         west update -o=--depth=1 -n
 
     - name: Environment setup

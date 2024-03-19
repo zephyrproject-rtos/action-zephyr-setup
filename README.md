@@ -7,7 +7,7 @@ the necessary modules for a West based [Zephyr workspace application][1].
 
 ```yaml
 - name: Setup Zephyr project
-  uses: zephyrproject-rtos/zephyr-setup@v1
+  uses: zephyrproject-rtos/action-zephyr-setup@v1
   with:
     app-path: example-application
     toolchains: arm-zephyr-eabi
@@ -22,7 +22,7 @@ the necessary modules for a West based [Zephyr workspace application][1].
   uses: actions/checkout@v3
 
 - name: Setup Zephyr project
-  uses: zephyrproject-rtos/zephyr-setup@v1
+  uses: zephyrproject-rtos/action-zephyr-setup@v1
   with:
     app-path: app
     toolchains: arm-zephyr-eabi
@@ -41,7 +41,7 @@ the necessary modules for a West based [Zephyr workspace application][1].
     path: app
 
 - name: Setup Zephyr project
-  uses: zephyrproject-rtos/zephyr-setup@v1
+  uses: zephyrproject-rtos/action-zephyr-setup@v1
   with:
     app-path: app
     toolchains: arm-zephyr-eabi
@@ -55,7 +55,7 @@ the necessary modules for a West based [Zephyr workspace application][1].
 
 ```yaml
 - name: Setup Zephyr project
-  uses: zephyrproject-rtos/zephyr-setup@v1
+  uses: zephyrproject-rtos/action-zephyr-setup@v1
   with:
     app-path: app
     toolchains: arm-zephyr-eabi:riscv64-zephyr-elf

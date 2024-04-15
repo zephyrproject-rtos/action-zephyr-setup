@@ -44,10 +44,10 @@ runs:
         pip3 install west
 
         if [ "${{ runner.os }}" = "Linux" ]; then
-          sudo apt-get update
-          sudo apt-get install ninja-build ccache
+          sudo apt-get update -y
+          sudo apt-get install -y ninja-build ccache
           if [ "${{ runner.arch }}" = "X64" ]; then
-            sudo apt-get install libc6-dev-i386
+            sudo apt-get install -y libc6-dev-i386
           fi
         elif [ "${{ runner.os }}" = "macOS" ]; then
           brew install ninja ccache qemu dtc

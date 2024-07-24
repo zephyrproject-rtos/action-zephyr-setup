@@ -41,6 +41,7 @@ runs:
         fi
 
         pip3 install -U pip wheel
+        pip3 install requests
         pip3 install west
 
         if [ "${{ runner.os }}" = "Linux" ]; then

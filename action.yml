@@ -41,11 +41,12 @@ runs:
         fi
 
         pip3 install -U pip wheel
+        pip3 install requests
         pip3 install west
 
         if [ "${{ runner.os }}" = "Linux" ]; then
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build ccache
+          sudo apt-get install -y ninja-build ccache cmake
           if [ "${{ runner.arch }}" = "X64" ]; then
             sudo apt-get install -y libc6-dev-i386
           fi
@@ -62,6 +63,7 @@ runs:
       run: |
         west init -l ${{ inputs.app-path }} --mf ${{ inputs.manifest-file-name }}
         west update -o=--depth=1 -n
+        west blobs fetch
 
     - name: Environment setup
       id: env-setup

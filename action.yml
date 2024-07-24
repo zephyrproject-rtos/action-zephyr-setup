@@ -62,6 +62,7 @@ runs:
       run: |
         west init -l ${{ inputs.app-path }} --mf ${{ inputs.manifest-file-name }}
         west update -o=--depth=1 -n
+        west blobs fetch
 
     - name: Environment setup
       id: env-setup

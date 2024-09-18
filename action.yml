@@ -45,7 +45,7 @@ runs:
 
         if [ "${{ runner.os }}" = "Linux" ]; then
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build ccache
+          sudo apt-get install -y ninja-build ccache g++-multilib
           if [ "${{ runner.arch }}" = "X64" ]; then
             sudo apt-get install -y libc6-dev-i386
           fi

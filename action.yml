@@ -135,15 +135,7 @@ runs:
       run: |
         pip3 install -r zephyr/scripts/requirements.txt
 
-    - name: Cache Zephyr SDK
-      id: cache-toolchain
-      uses: actions/cache@v4
-      with:
-        path: zephyr-sdk
-        key: ${{ env.SDK_FILE }}-${{ inputs.toolchains }}
-
-    - if: ${{ steps.cache-toolchain.outputs.cache-hit != 'true' }}
-      name: Download Zephyr SDK
+    - name: Download Zephyr SDK
       shell: bash
       run: |
         wget --progress=dot:giga ${{ inputs.sdk-base }}/v${SDK_VERSION}/${SDK_FILE}

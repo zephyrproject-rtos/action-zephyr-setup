@@ -7,8 +7,17 @@ description: Setup a Zephyr base project using west and downloading the Zephyr S
 inputs:
   app-path:
     description: |
-      Application code path, should contain a west.yml file if "manifest-file-name" is not specified
+      Application code path, should contain a west.yml file if
+      "manifest-file-name" is not specified, cannot contain multiple
+      directories (use base-path instead)
     required: true
+
+  base-path:
+    description: |
+      Application base path, should contain the app-path. Defaults to "." if
+      unspecified
+    required: false
+    default: .
 
   manifest-file-name:
     description: Name of the west workspace manifest file name in "app-path"
@@ -58,12 +67,14 @@ runs:
         fi
 
     - name: Initialize
+      working-directory: ${{ inputs.base-path }}
       shell: bash
       run: |
         west init -l ${{ inputs.app-path }} --mf ${{ inputs.manifest-file-name }}
         west update -o=--depth=1 -n
 
     - name: Environment setup
+      working-directory: ${{ inputs.base-path }}
       id: env-setup
       shell: bash
       run: |
@@ -126,9 +137,10 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ env.PIP_CACHE_PATH }}
-        key: pip-${{ runner.os }}-${{ hashFiles('zephyr/scripts/requirements*.txt') }}
+        key: pip-${{ runner.os }}-${{ hashFiles(format('{0}/zephyr/scripts/requirements*.txt', inputs.base-path)) }}
 
     - name: Install Python packages
+      working-directory: ${{ inputs.base-path }}
       shell: bash
       run: |
         pip3 install -r zephyr/scripts/requirements.txt
@@ -137,10 +149,11 @@ runs:
       id: cache-toolchain
       uses: actions/cache@v4
       with:
-        path: zephyr-sdk
+        path: ${{ inputs.base-path }}/zephyr-sdk
         key: ${{ env.SDK_FILE }}-${{ inputs.toolchains }}
 
     - if: ${{ steps.cache-toolchain.outputs.cache-hit != 'true' }}
+      working-directory: ${{ inputs.base-path }}
       name: Download Zephyr SDK
       shell: bash
       run: |
@@ -154,7 +167,7 @@ runs:
         fi
 
     - name: Setup Zephyr SDK
-      working-directory: zephyr-sdk
+      working-directory: ${{ inputs.base-path }}/zephyr-sdk
       shell: bash
       run: |
         IFS=":"

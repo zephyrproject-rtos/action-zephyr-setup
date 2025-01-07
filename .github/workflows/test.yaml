@@ -14,6 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04, macos-13, macos-14, windows-2022]
+        release: [v3.7.0, v4.0.0, main]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -24,6 +25,7 @@ jobs:
         with:
           repository: zephyrproject-rtos/zephyr
           path: zephyr
+          ref: ${{ matrix.release }}
 
       - name: Set up Python
         uses: actions/setup-python@v5

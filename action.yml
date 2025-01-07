@@ -141,8 +141,10 @@ runs:
     - name: Install Python packages
       working-directory: ${{ inputs.base-path }}
       shell: bash
+      # The direct use of pip3 should be removed after zephyr 4.1 has been phased out, and the west
+      # command should only be used instead.
       run: |
-        pip3 install -r zephyr/scripts/requirements.txt
+        west packages pip --install --ignore-venv-check || pip3 install -r zephyr/scripts/requirements.txt
 
     - name: Cache Zephyr SDK
       id: cache-toolchain

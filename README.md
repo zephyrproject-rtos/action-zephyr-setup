@@ -1,4 +1,4 @@
-# action-setup-zephyr (experimental)
+# action-setup-zephyr
 
 This action initializes a Zephyr based project, downloading the Zephyr SDK and
 the necessary modules for a West based [Zephyr workspace application][1].

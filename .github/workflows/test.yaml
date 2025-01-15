@@ -47,4 +47,4 @@ jobs:
           elif [ "${{ runner.os }}" = "Windows" ]; then
             EXTRA_TWISTER_FLAGS="-P native_sim --short-build-path -O/tmp/twister-out"
           fi
-          ./scripts/twister --force-color --inline-logs -T samples/hello_world -v $EXTRA_TWISTER_FLAGS
+          ./scripts/twister --runtime-artifact-cleanup --force-color --inline-logs -T samples/hello_world -v $EXTRA_TWISTER_FLAGS

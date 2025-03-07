@@ -24,6 +24,13 @@ inputs:
     required: false
     default: west.yml
 
+  modules:
+    description: |
+      List of modules to limit workspace initialization to, space separated.
+      Defaults to cloning all modules.
+    required: false
+    default:
+
   sdk-version:
     description: Zephyr SDK version to use or "auto" to detect automatically
     required: false
@@ -49,7 +56,6 @@ runs:
           python.exe -m pip install -U pip
         fi
 
-        pip3 install -U pip wheel
         pip3 install west
 
         if [ "${{ runner.os }}" = "Linux" ]; then
@@ -70,7 +76,7 @@ runs:
       shell: bash
       run: |
         west init -l ${{ inputs.app-path }} --mf ${{ inputs.manifest-file-name }}
-        west update -o=--depth=1 -n
+        west update -o=--depth=1 -n ${{ inputs.modules }}
 
     - name: Environment setup
       working-directory: ${{ inputs.base-path }}

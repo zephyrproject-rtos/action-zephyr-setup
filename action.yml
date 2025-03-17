@@ -60,10 +60,26 @@ runs:
           fi
         elif [ "${{ runner.os }}" = "macOS" ]; then
           brew install ninja ccache qemu dtc
-        elif [ "${{ runner.os }}" = "Windows" ]; then
-          choco feature enable -n allowGlobalConfirmation
-          choco install ninja wget
         fi
+
+    - name: Install Windows dependencies
+      if: ${{ runner.os == 'Windows' }}
+      shell: pwsh
+          #winget install --disable-interactivity --accept-source-agreements Ninja-build.Ninja oss-winget.dtc wget
+      run: |
+          winget install --disable-interactivity --accept-source-agreements WingetPathUpdater
+          winget install --disable-interactivity --accept-source-agreements wget
+          wget --version
+          
+    - name: Test winget
+      if: ${{ runner.os == 'Windows' }}
+      shell: pwsh
+      run: |
+          echo "running winget"
+          winget --version
+          echo "running wget"
+          wget --version
+
 
     - name: Initialize
       working-directory: ${{ inputs.base-path }}
@@ -158,7 +174,7 @@ runs:
       name: Download Zephyr SDK
       shell: bash
       run: |
-        wget --progress=dot:giga ${{ inputs.sdk-base }}/v${SDK_VERSION}/${SDK_FILE}
+       wget --progress=dot:giga ${{ inputs.sdk-base }}/v${SDK_VERSION}/${SDK_FILE}
         if [ "${{ runner.os }}" = "Windows" ]; then
           7z x $SDK_FILE
           mv zephyr-sdk-${SDK_VERSION} zephyr-sdk

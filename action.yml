@@ -39,6 +39,16 @@ inputs:
     required: false
     default: arm-zephyr-eabi
 
+  west-project-filter:
+    description: West project filter
+    required: false
+    default: ""
+
+  west-group-filter:
+    description: West group filter
+    required: false
+    default: ""
+
 runs:
   using: "composite"
   steps:
@@ -69,6 +79,12 @@ runs:
       working-directory: ${{ inputs.base-path }}
       shell: bash
       run: |
+        if [ -n "${{ inputs.west-group-filter }}" ]; then
+          west config manifest.group-filter -- ${{ inputs.west-group-filter }}
+        fi
+        if [ -n "${{ inputs.west-project-filter }}" ]; then
+          west config manifest.project-filter -- ${{ inputs.west-project-filter }}
+        fi
         west init -l ${{ inputs.app-path }} --mf ${{ inputs.manifest-file-name }}
         west update -o=--depth=1 -n
 

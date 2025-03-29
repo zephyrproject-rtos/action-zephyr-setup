@@ -73,4 +73,15 @@ the necessary modules for a West based [Zephyr workspace application][1].
     manifest-file-name: custom_west.yml
 ```
 
+## Skip installing OS level dependencies and Zephyr SDK
+
+```yaml
+- name: Setup Zephyr project
+  uses: zephyrproject-rtos/action-zephyr-setup@v1
+  with:
+    app-path: example-application
+    toolchains: arm-zephyr-eabi
+    skip-dependencies: true
+```
+
 [1]: https://docs.zephyrproject.org/latest/develop/application/index.html#zephyr-workspace-app

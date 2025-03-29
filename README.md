@@ -73,4 +73,16 @@ the necessary modules for a West based [Zephyr workspace application][1].
     manifest-file-name: custom_west.yml
 ```
 
+## Filter west groups and projects
+
+```yaml
+- name: Setup Zephyr project
+  uses: zephyrproject-rtos/zephyr-setup@v1
+  with:
+    app-path: app
+    toolchains: arm-zephyr-eabi
+    west-group-filter: -hal,-tools,-bootloader,-babblesim
+    west-project-filter: -nrf_hw_models
+```
+
 [1]: https://docs.zephyrproject.org/latest/develop/application/index.html#zephyr-workspace-app

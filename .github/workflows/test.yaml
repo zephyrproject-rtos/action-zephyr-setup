@@ -37,6 +37,8 @@ jobs:
         with:
           app-path: zephyr
           toolchains: all
+          west-group-filter: -tools,-bootloader,-babblesim
+          west-project-filter: -nrf_hw_models
 
       - name: Build firmware
         working-directory: zephyr

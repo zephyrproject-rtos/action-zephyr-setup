@@ -79,13 +79,13 @@ runs:
       working-directory: ${{ inputs.base-path }}
       shell: bash
       run: |
+        west init -l ${{ inputs.app-path }} --mf ${{ inputs.manifest-file-name }}
         if [ -n "${{ inputs.west-group-filter }}" ]; then
           west config manifest.group-filter -- ${{ inputs.west-group-filter }}
         fi
         if [ -n "${{ inputs.west-project-filter }}" ]; then
           west config manifest.project-filter -- ${{ inputs.west-project-filter }}
         fi
-        west init -l ${{ inputs.app-path }} --mf ${{ inputs.manifest-file-name }}
         west update -o=--depth=1 -n
 
     - name: Environment setup

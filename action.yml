@@ -34,6 +34,13 @@ inputs:
     required: false
     default: https://github.com/zephyrproject-rtos/sdk-ng/releases/download
 
+  skip-dependencies:
+    description: |
+      Set to 'true' to skip installation of SDK and OS dependencies. Useful
+      when running action within a container
+    required: false
+    default: 'false'
+
   toolchains:
     description: List of toolchains to install, colon separated
     required: false
@@ -53,6 +60,7 @@ runs:
   using: "composite"
   steps:
     - name: Install dependencies
+      if: ${{ inputs.skip-dependencies != 'true' }}
       shell: bash
       run: |
         if [ "${{ runner.os }}" = "Windows" ]; then
@@ -163,13 +171,14 @@ runs:
         west packages pip --install --ignore-venv-check || pip3 install -r zephyr/scripts/requirements.txt
 
     - name: Cache Zephyr SDK
+      if: ${{ inputs.skip-dependencies != 'true' }}
       id: cache-toolchain
       uses: actions/cache@v4
       with:
         path: ${{ inputs.base-path }}/zephyr-sdk
         key: ${{ env.SDK_FILE }}-${{ inputs.toolchains }}
 
-    - if: ${{ steps.cache-toolchain.outputs.cache-hit != 'true' }}
+    - if: ${{ steps.cache-toolchain.outputs.cache-hit != 'true' && inputs.skip-dependencies != 'true' }}
       working-directory: ${{ inputs.base-path }}
       name: Download Zephyr SDK
       shell: bash
@@ -184,6 +193,7 @@ runs:
         fi
 
     - name: Setup Zephyr SDK
+      if: ${{ inputs.skip-dependencies != 'true' }}
       working-directory: ${{ inputs.base-path }}/zephyr-sdk
       shell: bash
       run: |

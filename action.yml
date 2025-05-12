@@ -49,6 +49,11 @@ inputs:
     required: false
     default: ""
 
+  west-version:
+    description: West version to install, latest if omitted
+    required: false
+    default: ""
+
 runs:
   using: "composite"
   steps:
@@ -60,7 +65,12 @@ runs:
         fi
 
         pip3 install -U pip wheel
-        pip3 install west
+
+        if [ -n "${{ inputs.west-version }}" ]; then
+          pip3 install west==${{ inputs.west-version }}
+        else
+          pip3 install west
+        fi
 
         if [ "${{ runner.os }}" = "Linux" ]; then
           sudo apt-get update -y

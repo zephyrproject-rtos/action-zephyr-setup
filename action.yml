@@ -162,7 +162,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ env.PIP_CACHE_PATH }}
-        key: pip-${{ runner.os }}-${{ hashFiles(format('{0}/zephyr/scripts/requirements*.txt', inputs.base-path)) }}
+        key: pip-${{ runner.image }}-${{ hashFiles(format('{0}/zephyr/scripts/requirements*.txt', inputs.base-path)) }}
 
     - name: Install Python packages
       working-directory: ${{ inputs.base-path }}

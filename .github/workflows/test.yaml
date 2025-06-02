@@ -27,10 +27,18 @@ jobs:
           path: zephyr
           ref: ${{ matrix.release }}
 
+      - name: Available disk space?
+        run: |
+          df -h
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: 3.11
+
+      - name: Available disk space?
+        run: |
+          df -h
 
       - name: Setup Zephyr project
         uses: ./
@@ -39,6 +47,10 @@ jobs:
           toolchains: all
           west-group-filter: -tools,-bootloader,-babblesim
           west-project-filter: -nrf_hw_models
+
+      - name: Available disk space?
+        run: |
+          df -h
 
       - name: Build firmware
         working-directory: zephyr
@@ -50,3 +62,7 @@ jobs:
             EXTRA_TWISTER_FLAGS="-P native_sim --short-build-path -O/tmp/twister-out"
           fi
           ./scripts/twister --force-color --inline-logs -T samples/hello_world -v $EXTRA_TWISTER_FLAGS
+
+      - name: Available disk space?
+        run: |
+          df -h

@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04, macos-13, macos-14, windows-2022]
-        release: [v3.7.0, v4.0.0, main]
+        release: [v3.7.0, v4.0.0, v4.1.0, main]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout

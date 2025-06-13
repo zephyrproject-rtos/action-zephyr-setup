@@ -19,7 +19,12 @@ the necessary modules for a West based [Zephyr workspace application][1].
 
 ```yaml
 - name: Checkout
-  uses: actions/checkout@v3
+  uses: actions/checkout@v4
+
+- name: Set up Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: 3.12
 
 - name: Setup Zephyr project
   uses: zephyrproject-rtos/action-zephyr-setup@v1
@@ -36,9 +41,14 @@ the necessary modules for a West based [Zephyr workspace application][1].
 
 ```yaml
 - name: Checkout
-  uses: actions/checkout@v3
+  uses: actions/checkout@v4
   with:
     path: app
+
+- name: Set up Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: 3.12
 
 - name: Setup Zephyr project
   uses: zephyrproject-rtos/action-zephyr-setup@v1

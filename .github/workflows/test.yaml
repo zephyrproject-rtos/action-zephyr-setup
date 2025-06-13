@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-13, macos-14, windows-2022]
+        os: [ubuntu-24.04, macos-13, macos-14, windows-2022]
         release: [v3.7.0, v4.0.0, main]
     runs-on: ${{ matrix.os }}
     steps:

@@ -36,7 +36,7 @@ jobs:
         uses: ./
         with:
           app-path: zephyr
-          toolchains: all
+          toolchains: arm-zephyr-eabi:riscv64-zephyr-elf:x86_64-zephyr-elf
           west-group-filter: -tools,-bootloader,-babblesim
           west-project-filter: -nrf_hw_models
 
@@ -49,4 +49,14 @@ jobs:
           elif [ "${{ runner.os }}" = "Windows" ]; then
             EXTRA_TWISTER_FLAGS="-P native_sim --short-build-path -O/tmp/twister-out"
           fi
-          ./scripts/twister --force-color --inline-logs -T samples/hello_world -v $EXTRA_TWISTER_FLAGS
+
+          PLATFORMS_FLAGS="-p native_sim "
+          PLATFORMS_FLAGS+="-p qemu_cortex_m0 "
+          PLATFORMS_FLAGS+="-p qemu_cortex_r5 "
+          PLATFORMS_FLAGS+="-p qemu_riscv32 "
+          PLATFORMS_FLAGS+="-p qemu_riscv32e "
+          PLATFORMS_FLAGS+="-p qemu_riscv64 "
+          PLATFORMS_FLAGS+="-p qemu_x86 "
+          PLATFORMS_FLAGS+="-p qemu_x86_64"
+
+          ./scripts/twister --force-color --inline-logs -T samples/hello_world -v $PLATFORMS_FLAGS $EXTRA_TWISTER_FLAGS

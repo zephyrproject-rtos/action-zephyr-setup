@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-13, macos-14, windows-2022]
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-13, macos-14, macos-15, windows-2022]
         release: [v3.7.0, v4.0.0, v4.1.0, main]
     runs-on: ${{ matrix.os }}
     steps:
@@ -50,7 +50,12 @@ jobs:
             EXTRA_TWISTER_FLAGS="-P native_sim --short-build-path -O/tmp/twister-out"
           fi
 
-          PLATFORMS_FLAGS="-p native_sim "
+          PLATFORMS_FLAGS=""
+          if [ "${{ runner.os }}-${{ runner.arch }}" == "Linux-ARM64" ]; then
+            PLATFORMS_FLAGS+="-p native_sim/native/64 "
+          else
+            PLATFORMS_FLAGS+="-p native_sim "
+          fi
           PLATFORMS_FLAGS+="-p qemu_cortex_m0 "
           PLATFORMS_FLAGS+="-p qemu_cortex_r5 "
           PLATFORMS_FLAGS+="-p qemu_riscv32 "

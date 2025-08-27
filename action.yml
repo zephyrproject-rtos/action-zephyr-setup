@@ -73,6 +73,7 @@ runs:
         fi
 
         if [ "${{ runner.os }}" = "Linux" ]; then
+          sudo rm -f /var/lib/man-db/auto-update
           sudo apt-get update -y
           sudo apt-get install -y ninja-build ccache gperf
           if [ "${{ runner.arch }}" = "X64" ]; then

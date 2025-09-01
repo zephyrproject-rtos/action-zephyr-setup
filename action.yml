@@ -19,6 +19,19 @@ inputs:
     required: false
     default: .
 
+  ccache-max-size:
+    description: |
+      Maximum size of the files stored in the compiler cache (ccache). Defaults to 512MB.
+    required: false
+    default: 512MB
+
+  enable-ccache:
+    description: |
+      Enable caching/restoring of compiler cache (ccache) files between invocations.
+      Defaults to 'true'.
+    required: false
+    default: true
+
   manifest-file-name:
     description: Name of the west workspace manifest file name in "app-path"
     required: false
@@ -121,16 +134,19 @@ runs:
 
         if [ "${{ runner.os }}" = "Linux" ]; then
           pip_cache_path="~/.cache/pip"
+          ccache_path="$HOME/.cache/ccache"
           sdk_ext="tar.xz"
           setup_file="./setup.sh"
           setup_opt="-"
         elif [ "${{ runner.os }}" = "macOS" ]; then
           pip_cache_path="~/Library/Caches/pip"
+          ccache_path="$HOME/Library/Caches/ccache"
           sdk_ext="tar.xz"
           setup_file="./setup.sh"
           setup_opt="-"
         elif [ "${{ runner.os }}" = "Windows" ]; then
           pip_cache_path="~/AppData/Local/pip/Cache"
+          ccache_path="$HOME/AppData/Local/ccache/Cache"
           sdk_ext="7z"
           setup_file="./setup.cmd"
           setup_opt="//"
@@ -156,6 +172,9 @@ runs:
         echo "SDK_VERSION=${sdk_version}" >> $GITHUB_ENV
         echo "SDK_FILE=zephyr-sdk-${sdk_version}_${sdk_variant}_minimal.${sdk_ext}" >> $GITHUB_ENV
         echo "PIP_CACHE_PATH=${pip_cache_path}" >> $GITHUB_ENV
+        echo "CCACHE_TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
+        echo "CCACHE_DIR=${ccache_path}" >> $GITHUB_ENV
+        echo "CCACHE_IGNOREOPTIONS=-specs=* --specs=*" >> $GITHUB_ENV
         echo "SETUP_FILE=${setup_file}" >> $GITHUB_ENV
         echo "SETUP_OPT=${setup_opt}" >> $GITHUB_ENV
 
@@ -207,3 +226,20 @@ runs:
             ${SETUP_FILE} ${SETUP_OPT}h
         fi
         ${SETUP_FILE} ${SETUP_OPT}c
+
+    - name: Cache ccache data
+      if: inputs.enable-ccache == 'true' && runner.os != 'Windows'
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.CCACHE_DIR }}
+        key: ccache-${{ matrix.os }}-${{ matrix.release }}-${{ env.CCACHE_TIMESTAMP }}
+        restore-keys: ccache-${{ matrix.os }}-${{ matrix.release }}-
+
+    - name: Set up ccache
+      if: inputs.enable-ccache == 'true' && runner.os != 'Windows'
+      shell: bash
+      run: |
+        mkdir -p ${{ env.CCACHE_DIR }}
+        ccache -M ${{ inputs.ccache-max-size }}
+        ccache -p
+        ccache -z -s -vv

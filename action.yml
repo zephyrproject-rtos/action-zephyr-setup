@@ -130,7 +130,7 @@ runs:
           setup_file="./setup.sh"
           setup_opt="-"
         elif [ "${{ runner.os }}" = "Windows" ]; then
-          pip_cache_path="~\AppData\Local\pip\Cache"
+          pip_cache_path="~/AppData/Local/pip/Cache"
           sdk_ext="7z"
           setup_file="./setup.cmd"
           setup_opt="//"

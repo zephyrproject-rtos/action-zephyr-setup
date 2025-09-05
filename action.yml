@@ -32,6 +32,14 @@ inputs:
     required: false
     default: true
 
+  ccache-cache-key:
+    description: |
+      An additional string used in the ccache cache key, use it to identify the
+      cache in a way that makes sense for compiled object cache reuse between
+      different build workflows. Default to "default".
+    required: false
+    default: default
+
   manifest-file-name:
     description: Name of the west workspace manifest file name in "app-path"
     required: false
@@ -232,8 +240,8 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ env.CCACHE_DIR }}
-        key: ccache-${{ matrix.os }}-${{ matrix.release }}-${{ env.CCACHE_TIMESTAMP }}
-        restore-keys: ccache-${{ matrix.os }}-${{ matrix.release }}-
+        key: ccache-${{ inputs.ccache-cache-key }}-${{ env.CCACHE_TIMESTAMP }}
+        restore-keys: ccache-${{ inputs.ccache-cache-key }}-
 
     - name: Set up ccache
       if: inputs.enable-ccache == 'true' && runner.os != 'Windows'

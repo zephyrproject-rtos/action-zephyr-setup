@@ -39,6 +39,7 @@ jobs:
           toolchains: arm-zephyr-eabi:riscv64-zephyr-elf:x86_64-zephyr-elf
           west-group-filter: -tools,-bootloader,-babblesim
           west-project-filter: -nrf_hw_models
+          ccache-cache-key: ${{ matrix.os }}-${{ matrix.release }}
 
       - name: Build firmware
         working-directory: zephyr

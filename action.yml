@@ -204,11 +204,11 @@ runs:
       id: cache-toolchain
       uses: actions/cache@v4
       with:
-        path: ${{ inputs.base-path }}/zephyr-sdk
+        path: /opt/zephyr-sdk
         key: ${{ env.SDK_FILE }}-${{ inputs.toolchains }}
 
     - if: ${{ steps.cache-toolchain.outputs.cache-hit != 'true' }}
-      working-directory: ${{ inputs.base-path }}
+      working-directory: /opt
       name: Download Zephyr SDK
       shell: bash
       run: |
@@ -222,7 +222,7 @@ runs:
         fi
 
     - name: Setup Zephyr SDK
-      working-directory: ${{ inputs.base-path }}/zephyr-sdk
+      working-directory: /opt/zephyr-sdk
       shell: bash
       run: |
         IFS=":"

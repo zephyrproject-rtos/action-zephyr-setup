@@ -213,6 +213,7 @@ runs:
       shell: bash
       run: |
         wget --progress=dot:giga ${{ inputs.sdk-base }}/v${SDK_VERSION}/${SDK_FILE}
+        rm -rf zephyr-sdk
         if [ "${{ runner.os }}" = "Windows" ]; then
           7z x $SDK_FILE
           mv zephyr-sdk-${SDK_VERSION} zephyr-sdk
@@ -220,6 +221,7 @@ runs:
           mkdir zephyr-sdk
           tar xvf $SDK_FILE -C zephyr-sdk --strip-components=1
         fi
+        rm -f $SDK_FILE
 
     - name: Setup Zephyr SDK
       working-directory: ${{ inputs.base-path }}/zephyr-sdk

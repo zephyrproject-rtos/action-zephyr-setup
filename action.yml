@@ -96,12 +96,12 @@ runs:
         if [ "${{ runner.os }}" = "Linux" ]; then
           sudo rm -f /var/lib/man-db/auto-update
           sudo apt-get update -y
-          sudo apt-get install -y ninja-build ccache gperf
+          sudo apt-get install -y ccache gperf
           if [ "${{ runner.arch }}" = "X64" ]; then
             sudo apt-get install -y libc6-dev-i386 g++-multilib
           fi
         elif [ "${{ runner.os }}" = "macOS" ]; then
-          brew install ninja ccache qemu dtc gperf
+          brew install ccache qemu dtc gperf
         elif [ "${{ runner.os }}" = "Windows" ]; then
           choco feature enable -n allowGlobalConfirmation
           choco install ninja wget gperf

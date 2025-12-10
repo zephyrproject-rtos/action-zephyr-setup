@@ -193,12 +193,22 @@ runs:
         key: pip-${{ runner.os }}-${{ hashFiles(format('{0}/zephyr/scripts/requirements*.txt', inputs.base-path)) }}
 
     - name: Install Python packages
+      if: runner.os != 'Windows'
       working-directory: ${{ inputs.base-path }}
       shell: bash
-      # The direct use of pip3 should be removed after zephyr 4.1 has been phased out, and the west
+      # The direct use of pip3 should be removed after zephyr 3.7 has been phased out, and the west
       # command should only be used instead.
       run: |
         west packages pip --install --ignore-venv-check || pip3 install -r zephyr/scripts/requirements.txt
+
+    - name: Install Python packages (Windows)
+      if: runner.os == 'Windows'
+      working-directory: ${{ inputs.base-path }}
+      shell: powershell
+      # The direct use of pip3 should be removed after zephyr 3.7 has been phased out, and the west
+      # command should only be used instead.
+      run: |
+        pip3 install @((west packages pip) -split ' '); if (!$?) { pip3 install -r zephyr/scripts/requirements.txt }
 
     - name: Cache Zephyr SDK
       id: cache-toolchain

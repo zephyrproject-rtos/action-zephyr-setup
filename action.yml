@@ -101,7 +101,7 @@ runs:
             sudo apt-get install -y libc6-dev-i386 g++-multilib
           fi
         elif [ "${{ runner.os }}" = "macOS" ]; then
-          brew install ccache qemu dtc gperf
+          brew install ccache qemu dtc gperf coreutils
         elif [ "${{ runner.os }}" = "Windows" ]; then
           choco feature enable -n allowGlobalConfirmation
           choco install ninja wget gperf
@@ -177,8 +177,12 @@ runs:
           sdk_version="${{ inputs.sdk-version }}"
         fi
 
+        sdk_file="zephyr-sdk-${sdk_version}_${sdk_variant}_minimal.${sdk_ext}"
+        sdk_cache_key="$( sha1sum <<< ${sdk_file}-${{ github.event.repository.name }}-${{ inputs.toolchains }} | cut -d' ' -f1 )"
+
         echo "SDK_VERSION=${sdk_version}" >> $GITHUB_ENV
-        echo "SDK_FILE=zephyr-sdk-${sdk_version}_${sdk_variant}_minimal.${sdk_ext}" >> $GITHUB_ENV
+        echo "SDK_FILE=${sdk_file}" >> $GITHUB_ENV
+        echo "SDK_CACHE_KEY=${sdk_cache_key}" >> $GITHUB_ENV
         echo "PIP_CACHE_PATH=${pip_cache_path}" >> $GITHUB_ENV
         echo "CCACHE_TIMESTAMP=$(date +%s)" >> $GITHUB_ENV
         echo "CCACHE_DIR=${ccache_path}" >> $GITHUB_ENV
@@ -215,7 +219,7 @@ runs:
       uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
       with:
         path: ${{ inputs.base-path }}/zephyr-sdk
-        key: ${{ env.SDK_FILE }}-${{ github.event.repository.name }}-${{ inputs.toolchains }}
+        key: ${{ env.SDK_CACHE_KEY }}
 
     - if: steps.cache-toolchain.outputs.cache-hit != 'true'
       working-directory: ${{ inputs.base-path }}

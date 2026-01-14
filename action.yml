@@ -217,7 +217,7 @@ runs:
         path: ${{ inputs.base-path }}/zephyr-sdk
         key: ${{ env.SDK_FILE }}-${{ github.event.repository.name }}-${{ inputs.toolchains }}
 
-    - if: ${{ steps.cache-toolchain.outputs.cache-hit != 'true' }}
+    - if: steps.cache-toolchain.outputs.cache-hit != 'true'
       working-directory: ${{ inputs.base-path }}
       name: Download Zephyr SDK
       shell: bash

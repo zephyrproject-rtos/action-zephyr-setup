@@ -104,7 +104,7 @@ runs:
           brew install ccache qemu dtc gperf coreutils
         elif [ "${{ runner.os }}" = "Windows" ]; then
           choco feature enable -n allowGlobalConfirmation
-          choco install ninja wget gperf --no-progress
+          choco install wget gperf --no-progress
         fi
 
     - name: Initialize

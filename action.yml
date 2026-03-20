@@ -244,7 +244,11 @@ runs:
         IFS=":"
         TOOLCHAINS="${{ inputs.toolchains }}"
         for toolchain in $TOOLCHAINS; do
-            ${SETUP_FILE} ${SETUP_OPT}t $toolchain
+            if [ "$toolchain" == "llvm" ]; then
+              ${SETUP_FILE} ${SETUP_OPT}l
+            else
+              ${SETUP_FILE} ${SETUP_OPT}t $toolchain
+            fi
         done
         if [ ! -d sysroots ]; then
             ${SETUP_FILE} ${SETUP_OPT}h

@@ -191,7 +191,7 @@ runs:
         echo "SETUP_OPT=${setup_opt}" >> $GITHUB_ENV
 
     - name: Cache Python packages
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ${{ env.PIP_CACHE_PATH }}
         key: pip-${{ runner.os }}-${{ hashFiles(format('{0}/zephyr/scripts/requirements*.txt', inputs.base-path)) }}
@@ -216,7 +216,7 @@ runs:
 
     - name: Cache Zephyr SDK
       id: cache-toolchain
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ${{ inputs.base-path }}/zephyr-sdk
         key: ${{ env.SDK_CACHE_KEY }}
@@ -257,7 +257,7 @@ runs:
 
     - name: Cache ccache data
       if: inputs.enable-ccache == 'true' && runner.os != 'Windows'
-      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: ${{ env.CCACHE_DIR }}
         key: ccache-${{ inputs.ccache-cache-key }}-${{ env.CCACHE_TIMESTAMP }}

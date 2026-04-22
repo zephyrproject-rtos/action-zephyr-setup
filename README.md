@@ -1,5 +1,7 @@
 # action-setup-zephyr
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/zephyrproject-rtos/action-zephyr-setup/badge)](https://scorecard.dev/viewer/?uri=github.com/zephyrproject-rtos/action-zephyr-setup)
+
 This action initializes a Zephyr based project, downloading the Zephyr SDK and
 the necessary modules for a West based [Zephyr workspace application][1].
 

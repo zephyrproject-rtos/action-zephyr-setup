@@ -119,6 +119,9 @@ runs:
           west config manifest.project-filter -- ${{ inputs.west-project-filter }}
         fi
         west update -o=--depth=1 -n
+        if [ -f "${{ inputs.app-path }}/zephyr/patches.yml" ]; then
+          west patch apply
+        fi
 
     - name: Environment setup
       working-directory: ${{ inputs.base-path }}

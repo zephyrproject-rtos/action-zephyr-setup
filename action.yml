@@ -104,7 +104,7 @@ runs:
           brew install ccache qemu dtc gperf coreutils
         elif [ "${{ runner.os }}" = "Windows" ]; then
           choco feature enable -n allowGlobalConfirmation
-          choco install wget gperf --no-progress
+          choco install wget gperf ccache --no-progress
         fi
 
     - name: Initialize
@@ -256,7 +256,7 @@ runs:
         ${SETUP_FILE} ${SETUP_OPT}c
 
     - name: Cache ccache data
-      if: inputs.enable-ccache == 'true' && runner.os != 'Windows'
+      if: inputs.enable-ccache == 'true'
       uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
       with:
         path: ${{ env.CCACHE_DIR }}
@@ -264,7 +264,7 @@ runs:
         restore-keys: ccache-${{ inputs.ccache-cache-key }}-
 
     - name: Set up ccache
-      if: inputs.enable-ccache == 'true' && runner.os != 'Windows'
+      if: inputs.enable-ccache == 'true'
       shell: bash
       run: |
         mkdir -p ${{ env.CCACHE_DIR }}

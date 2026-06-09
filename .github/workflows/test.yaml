@@ -70,6 +70,5 @@ jobs:
           ./scripts/twister --force-color --inline-logs -T samples/hello_world -v $PLATFORMS_FLAGS $EXTRA_TWISTER_FLAGS
 
       - name: Print ccache stats
-        if: runner.os != 'Windows'
         run: |
           ccache -s -vv

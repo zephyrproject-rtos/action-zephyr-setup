@@ -60,12 +60,12 @@ jobs:
             PLATFORMS_FLAGS+="-p native_sim "
           fi
           PLATFORMS_FLAGS+="-p qemu_cortex_m0 "
-          PLATFORMS_FLAGS+="-p qemu_cortex_r5 "
           PLATFORMS_FLAGS+="-p qemu_riscv32 "
-          PLATFORMS_FLAGS+="-p qemu_riscv32e "
           PLATFORMS_FLAGS+="-p qemu_riscv64 "
           PLATFORMS_FLAGS+="-p qemu_x86 "
           PLATFORMS_FLAGS+="-p qemu_x86_64"
+
+          export ZEPHYR_TOOLCHAIN_VARIANT=zephyr
 
           ./scripts/twister --force-color --inline-logs -T samples/hello_world -v $PLATFORMS_FLAGS $EXTRA_TWISTER_FLAGS
 

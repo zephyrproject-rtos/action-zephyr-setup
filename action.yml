@@ -96,7 +96,7 @@ runs:
         if [ "${{ runner.os }}" = "Linux" ]; then
           sudo rm -f /var/lib/man-db/auto-update
           sudo apt-get update -y
-          sudo apt-get install -y ccache gperf
+          sudo apt-get install -y ccache gperf libusb-1.0-0-dev
           if [ "${{ runner.arch }}" = "X64" ]; then
             sudo apt-get install -y libc6-dev-i386 g++-multilib
           fi
@@ -203,7 +203,14 @@ runs:
       # The direct use of pip3 should be removed after zephyr 3.7 has been phased out, and the west
       # command should only be used instead.
       run: |
-        west packages pip --install --ignore-venv-check || pip3 install -r zephyr/scripts/requirements.txt
+        west packages pip --install --ignore-venv-check || { \
+          if [ -f zephyr/scripts/requirements.txt ]; then \
+            pip3 install -r zephyr/scripts/requirements.txt; \
+          else \
+            pip3 install -r zephyr/scripts/requirements-base.txt \
+                         -r zephyr/scripts/requirements-run-test.txt; \
+          fi; \
+        }
 
     - name: Install Python packages (Windows)
       if: runner.os == 'Windows'
@@ -212,7 +219,14 @@ runs:
       # The direct use of pip3 should be removed after zephyr 3.7 has been phased out, and the west
       # command should only be used instead.
       run: |
-        pip3 install @((west packages pip) -split ' '); if (!$?) { pip3 install -r zephyr/scripts/requirements.txt }
+        pip3 install @((west packages pip) -split ' '); if (!$?) { \
+          if (Test-Path zephyr/scripts/requirements.txt) { \
+            pip3 install -r zephyr/scripts/requirements.txt; \
+          } else { \
+            pip3 install -r zephyr/scripts/requirements-base.txt `
+                         -r zephyr/scripts/requirements-run-test.txt; \
+          } \
+        }
 
     - name: Cache Zephyr SDK
       id: cache-toolchain

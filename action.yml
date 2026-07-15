@@ -75,6 +75,11 @@ inputs:
     required: false
     default: ""
 
+  west-update-flags:
+    description: Additional flags passed to west update command
+    required: false
+    default: "-o=--depth=1 -n"
+
 runs:
   using: "composite"
   steps:
@@ -118,7 +123,7 @@ runs:
         if [ -n "${{ inputs.west-project-filter }}" ]; then
           west config manifest.project-filter -- ${{ inputs.west-project-filter }}
         fi
-        west update -o=--depth=1 -n
+        west update ${{ inputs.west-update-flags }}
 
     - name: Environment setup
       working-directory: ${{ inputs.base-path }}

@@ -50,7 +50,7 @@ jobs:
           if [ "${{ runner.os }}" = "macOS" ]; then
             EXTRA_TWISTER_FLAGS="-P native_sim --build-only"
           elif [ "${{ runner.os }}" = "Windows" ]; then
-            EXTRA_TWISTER_FLAGS="-P native_sim --short-build-path -O/tmp/twister-out"
+            EXTRA_TWISTER_FLAGS="-P native_sim --build-only --short-build-path -O/tmp/twister-out"
           fi
 
           PLATFORMS_FLAGS=""
@@ -59,7 +59,7 @@ jobs:
           else
             PLATFORMS_FLAGS+="-p native_sim "
           fi
-          PLATFORMS_FLAGS+="-p qemu_cortex_m0 "
+          PLATFORMS_FLAGS+="-p qemu_cortex_m3 "
           PLATFORMS_FLAGS+="-p qemu_riscv32 "
           PLATFORMS_FLAGS+="-p qemu_riscv64 "
           PLATFORMS_FLAGS+="-p qemu_x86 "

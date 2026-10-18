@@ -8,6 +8,11 @@ the necessary modules for a West based [Zephyr workspace application][1].
 ## Basic usage
 
 ```yaml
+- name: Set up Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: 3.12
+
 - name: Setup Zephyr project
   uses: zephyrproject-rtos/action-zephyr-setup@v1
   with:
